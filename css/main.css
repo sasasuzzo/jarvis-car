@@ -277,4 +277,7 @@ textarea { min-height: 80px; resize: vertical; }
   .tape { top: calc(var(--safe-t) + 100px); }
   .dock { left: auto; width: 460px; }
   .recenter { bottom: calc(var(--safe-b) + 230px); }
+/* Mappa scura: OpenStreetMap non ha un tema scuro, lo ricaviamo con un filtro */
+body[data-theme="dark"] .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.7);
 }
