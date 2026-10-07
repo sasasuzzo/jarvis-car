@@ -17,7 +17,7 @@ export const CONFIG = {
     // Mappa scura di CARTO (dati © OpenStreetMap). Uso non commerciale con attribuzione.
     tiles: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     subdomains: 'abcd',
-    attribution: '© OpenStreetMap · © CARTO',
+    attribution: '© OpenStreetMap,
     maxZoom: 19,
   },
 
