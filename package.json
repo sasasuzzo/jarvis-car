@@ -1,0 +1,6 @@
+{
+  "name": "jarvis-car",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test" }
+}
