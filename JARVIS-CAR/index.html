@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0e1319">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>JARVIS CAR</title>
+  <meta name="description" content="Assistente intelligente alla guida: navigazione con traffico reale, avvisi vocali, meteo, agenda e musica.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body data-theme="dark">
+
+<!-- Sprite icone: tratto 2px, angoli arrotondati, stessa griglia 24x24 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-straight" viewBox="0 0 24 24"><path d="M12 20V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M7 20v-8a3 3 0 0 1 3-3h7M13 5l4 4-4 4"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M17 20v-8a3 3 0 0 0-3-3H7M11 5L7 9l4 4"/></symbol>
+    <symbol id="i-slight-right" viewBox="0 0 24 24"><path d="M8 20v-6l7-7M10 7h5v5"/></symbol>
+    <symbol id="i-slight-left" viewBox="0 0 24 24"><path d="M16 20v-6L9 7M14 7H9v5"/></symbol>
+    <symbol id="i-sharp-right" viewBox="0 0 24 24"><path d="M4 5h10a3 3 0 0 1 3 3v11M13 15l4 4 4-4"/></symbol>
+    <symbol id="i-sharp-left" viewBox="0 0 24 24"><path d="M20 5H10a3 3 0 0 0-3 3v11M3 15l4 4 4-4"/></symbol>
+    <symbol id="i-uturn" viewBox="0 0 24 24"><path d="M7 20V9a5 5 0 0 1 10 0v10M13 15l4 4 4-4"/></symbol>
+    <symbol id="i-merge" viewBox="0 0 24 24"><path d="M7 20c0-6 5-6 5-12M17 20c0-6-5-6-5-12M8 11l4-4 4 4"/></symbol>
+    <symbol id="i-exit-right" viewBox="0 0 24 24"><path d="M7 20V4M7 15c0-4 10-3 10-9M13 6h4v4"/></symbol>
+    <symbol id="i-exit-left" viewBox="0 0 24 24"><path d="M17 20V4M17 15c0-4-10-3-10-9M11 6H7v4"/></symbol>
+    <symbol id="i-roundabout" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 20v-4M12 8V3M10 5l2-2 2 2"/></symbol>
+    <symbol id="i-arrive" viewBox="0 0 24 24"><path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.500-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3" y="7" width="14" height="10" rx="2"/><path d="M17 11l4-2v6l-4-2"/><circle cx="10" cy="12" r="2.500"/></symbol>
+    <symbol id="i-light" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="20" rx="3"/><circle cx="12" cy="7" r="1.200"/><circle cx="12" cy="12" r="1.200"/><circle cx="12" cy="17" r="1.200"/></symbol>
+    <symbol id="i-jam" viewBox="0 0 24 24"><path d="M12 3l10 18H2zM12 10v5M12 18v.01"/></symbol>
+    <symbol id="i-incident" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12zM12 8v5M12 16v.01"/></symbol>
+    <symbol id="i-closed" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M6 12h12"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+    <symbol id="i-agenda" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 4h3v16H7zM14 4h3v16h-3z"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 4l10 8-10 8zM19 4v16"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M19 4L9 12l10 8zM5 4v16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+  </defs>
+</svg>
+
+<!-- ============================ ACCESSO ============================ -->
+<main id="login" class="login" aria-labelledby="login-title">
+  <form id="login-form" class="login-card" autocomplete="on" novalidate>
+    <h1 id="login-title" class="wordmark">JARVIS CAR</h1>
+    <p class="login-sub">Accedi per usare l'assistente alla guida.</p>
+
+    <label class="field">
+      <span>Utente</span>
+      <input id="login-user" name="username" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input id="login-pass" name="password" type="password" autocomplete="current-password" required>
+    </label>
+
+    <details id="server-box" class="server-box">
+      <summary>Server</summary>
+      <label class="field">
+        <span>Indirizzo del server (Worker)</span>
+        <input id="login-server" type="url" inputmode="url" placeholder="https://jarvis-car-proxy.nome.workers.dev" autocapitalize="none" spellcheck="false">
+      </label>
+    </details>
+
+    <p id="login-error" class="form-error" role="alert" hidden></p>
+    <button id="login-submit" class="btn btn-primary" type="submit">Accedi</button>
+  </form>
+</main>
+
+<!-- ============================ APP ============================ -->
+<div id="app" hidden>
+  <div id="map" aria-label="Mappa"></div>
+
+  <!-- Prossima manovra -->
+  <header id="maneuver" class="maneuver" hidden>
+    <svg class="m-icon" id="m-icon" aria-hidden="true"><use href="#i-straight"/></svg>
+    <div class="m-text">
+      <div class="m-dist"><span id="m-dist-n">0</span><span id="m-dist-u" class="unit">m</span></div>
+      <div id="m-street" class="m-street"></div>
+    </div>
+  </header>
+
+  <!-- Nastro "Davanti": cosa arriva, in ordine di distanza -->
+  <aside id="tape" class="tape" aria-label="Davanti" hidden></aside>
+
+  <button id="recenter" class="fab recenter" type="button" aria-label="Ricentra la mappa" hidden>
+    <svg><use href="#i-locate"/></svg>
+  </button>
+
+  <!-- Avvisi che richiedono una scelta -->
+  <div id="banner" class="banner" role="alert" hidden>
+    <p id="banner-text"></p>
+    <div class="banner-actions">
+      <button id="banner-yes" class="btn btn-primary" type="button">Imposta</button>
+      <button id="banner-no" class="btn" type="button">Ignora</button>
+    </div>
+  </div>
+
+  <!-- Sottotitoli: ciò che JARVIS sta dicendo (la voce è il canale principale) -->
+  <section id="caption" class="caption" aria-live="polite" data-p="idle">
+    <p id="caption-text" class="caption-text"></p>
+    <p id="heard" class="heard" aria-hidden="true"></p>
+  </section>
+
+  <!-- Dock inferiore -->
+  <footer class="dock">
+    <div class="trip" id="trip" hidden>
+      <div class="stat"><span class="stat-n" id="t-eta">--:--</span><span class="stat-l">Arrivo</span></div>
+      <div class="stat"><span class="stat-n"><span id="t-min">0</span><span class="unit">min</span></span><span class="stat-l" id="t-traffic">Traffico</span></div>
+      <div class="stat"><span class="stat-n"><span id="t-km">0</span><span class="unit">km</span></span><span class="stat-l" id="t-weather">Meteo</span></div>
+      <div class="stat stat-speed"><span class="stat-n" id="t-speed">0</span><span class="stat-l">km/h</span></div>
+    </div>
+
+    <nav class="controls" aria-label="Comandi">
+      <button class="ctl" id="b-dest" type="button"><svg><use href="#i-search"/></svg><span>Destinazione</span></button>
+      <button class="ctl" id="b-music" type="button"><svg><use href="#i-music"/></svg><span>Musica</span></button>
+      <button class="orb" id="orb" type="button" data-state="idle" aria-label="Parla con JARVIS"><svg><use href="#i-mic"/></svg></button>
+      <button class="ctl" id="b-agenda" type="button"><svg><use href="#i-agenda"/></svg><span>Agenda</span></button>
+      <button class="ctl" id="b-settings" type="button"><svg><use href="#i-sliders"/></svg><span>Impostazioni</span></button>
+    </nav>
+  </footer>
+
+  <!-- Schermata di avvio (serve un tocco: sblocca voce, audio e sensori) -->
+  <section id="start" class="start" aria-labelledby="start-title">
+    <div class="start-card">
+      <h2 id="start-title" class="wordmark">JARVIS CAR</h2>
+      <p class="start-lead">Per guidarla servono la posizione e il microfono. Fotocamera e sensori sono facoltativi e si attivano dalle impostazioni.</p>
+      <button id="start-btn" class="btn btn-primary btn-xl" type="button">Avvia Modalità Macchina</button>
+      <div class="start-links">
+        <button id="start-status" class="link" type="button">Stato del sistema</button>
+        <button id="start-settings" class="link" type="button">Impostazioni</button>
+        <button id="start-logout" class="link" type="button">Esci</button>
+      </div>
+      <p class="fineprint">Tieni lo schermo acceso e l'app in primo piano: i browser sospendono GPS e voce in background.</p>
+    </div>
+  </section>
+
+  <!-- Fogli -->
+  <div id="scrim" class="scrim" hidden></div>
+
+  <section id="sheet-dest" class="sheet" hidden aria-labelledby="sd-title">
+    <div class="sheet-head"><h2 id="sd-title">Destinazione</h2><button class="icon-btn" data-close type="button" aria-label="Chiudi"><svg><use href="#i-close"/></svg></button></div>
+    <form id="dest-form" class="row">
+      <input id="dest-input" type="search" placeholder="Indirizzo o luogo" autocomplete="off" aria-label="Indirizzo o luogo">
+      <button class="btn btn-primary" type="submit">Cerca</button>
+    </form>
+    <div id="dest-saved" class="chips"></div>
+    <ul id="dest-results" class="list"></ul>
+    <p id="dest-empty" class="empty" hidden></p>
+    <button id="dest-stop" class="btn btn-danger" type="button" hidden>Termina navigazione</button>
+  </section>
+
+  <section id="sheet-music" class="sheet" hidden aria-labelledby="sm-title">
+    <div class="sheet-head"><h2 id="sm-title">Musica</h2><button class="icon-btn" data-close type="button" aria-label="Chiudi"><svg><use href="#i-close"/></svg></button></div>
+    <p id="music-title" class="music-title">Niente in riproduzione</p>
+    <div class="player-row">
+      <button class="icon-btn lg" id="mu-prev" type="button" aria-label="Precedente"><svg><use href="#i-prev"/></svg></button>
+      <button class="icon-btn lg primary" id="mu-play" type="button" aria-label="Riproduci o pausa"><svg><use href="#i-play"/></svg></button>
+      <button class="icon-btn lg" id="mu-next" type="button" aria-label="Successivo"><svg><use href="#i-next"/></svg></button>
+    </div>
+    <label class="slider"><span>Volume</span><input id="mu-vol" type="range" min="0" max="100" step="5" value="70"><output id="mu-vol-o">70</output></label>
+    <form id="music-form" class="row">
+      <input id="music-input" type="search" placeholder="Artista, brano o genere" autocomplete="off" aria-label="Cerca musica">
+      <button class="btn btn-primary" type="submit">Cerca</button>
+    </form>
+    <p id="music-msg" class="empty" hidden></p>
+    <div id="yt-wrap" class="yt-wrap"><div id="yt-player"></div></div>
+  </section>
+
+  <section id="sheet-agenda" class="sheet" hidden aria-labelledby="sa-title">
+    <div class="sheet-head"><h2 id="sa-title">Agenda</h2><button class="icon-btn" data-close type="button" aria-label="Chiudi"><svg><use href="#i-close"/></svg></button></div>
+    <ul id="agenda-list" class="list"></ul>
+    <p id="agenda-empty" class="empty" hidden>Nessun appuntamento nelle prossime ore. Aggiungine uno qui sotto o dì "Jarvis, aggiungi un appuntamento".</p>
+    <form id="agenda-form" class="stack">
+      <label class="field"><span>Titolo</span><input id="ag-title" type="text" required></label>
+      <label class="field"><span>Data e ora</span><input id="ag-when" type="datetime-local" required></label>
+      <label class="field"><span>Luogo</span><input id="ag-place" type="text" placeholder="Indirizzo (serve per sapere quando partire)"></label>
+      <button class="btn btn-primary" type="submit">Aggiungi appuntamento</button>
+    </form>
+    <div class="row wrap">
+      <label class="btn" for="ag-file">Importa file .ics</label>
+      <input id="ag-file" type="file" accept=".ics,text/calendar" hidden>
+      <button id="ag-sync" class="btn" type="button">Sincronizza calendario</button>
+    </div>
+    <p id="agenda-msg" class="empty" hidden></p>
+  </section>
+
+  <section id="sheet-settings" class="sheet" hidden aria-labelledby="ss-title">
+    <div class="sheet-head"><h2 id="ss-title">Impostazioni</h2><button class="icon-btn" data-close type="button" aria-label="Chiudi"><svg><use href="#i-close"/></svg></button></div>
+    <div class="group">
+      <h3>Voce</h3>
+      <label class="toggle"><input type="checkbox" id="s-wake"><span>Ascolta la parola "Jarvis"</span></label>
+      <label class="toggle"><input type="checkbox" id="s-essential"><span>Parla solo per gli avvisi importanti</span></label>
+      <label class="field"><span>Voce</span><select id="s-engine"><option value="google">JARVIS (Google italiano, come sul PC)</option><option value="browser">Voce del dispositivo</option></select></label>
+      <label class="field"><span>Voce del dispositivo (se scelta)</span><select id="s-voice"></select></label>
+      <label class="slider"><span>Velocità</span><input id="s-rate" type="range" min="0.8" max="1.3" step="0.05"><output id="s-rate-o"></output></label>
+      <button id="s-test" class="btn" type="button">Prova la voce</button>
+    </div>
+    <div class="group">
+      <h3>Sicurezza</h3>
+      <label class="toggle"><input type="checkbox" id="s-accident"><span>Rileva possibili incidenti (accelerometro, GPS, fotocamera)</span></label>
+      <label class="toggle"><input type="checkbox" id="s-camera"><span>Usa la fotocamera</span></label>
+      <label class="toggle"><input type="checkbox" id="s-lights"><span>Stato del semaforo dalla fotocamera (sperimentale)</span></label>
+      <label class="toggle"><input type="checkbox" id="s-break"><span>Consiglia una pausa dopo 2 ore di guida</span></label>
+      <label class="field"><span>Contatto di emergenza (nome)</span><input id="s-ec-name" type="text"></label>
+      <label class="field"><span>Contatto di emergenza (telefono)</span><input id="s-ec-num" type="tel"></label>
+    </div>
+    <div class="group">
+      <h3>Percorso</h3>
+      <label class="toggle"><input type="checkbox" id="s-auto-alt"><span>Adotta da sola un'alternativa molto più veloce</span></label>
+      <label class="toggle"><input type="checkbox" id="s-tolls"><span>Evita i pedaggi</span></label>
+      <label class="toggle"><input type="checkbox" id="s-motorway"><span>Evita le autostrade</span></label>
+      <div class="row wrap">
+        <button id="s-home" class="btn" type="button">Salva qui come Casa</button>
+        <button id="s-work" class="btn" type="button">Salva qui come Lavoro</button>
+      </div>
+    </div>
+    <div class="group">
+      <h3>Agenda e musica</h3>
+      <label class="field"><span>Indirizzo iCal del calendario</span><input id="s-ics" type="url" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" autocapitalize="none" spellcheck="false"></label>
+      <label class="field"><span>Playlist YouTube (nome=ID, una per riga)</span><textarea id="s-playlists" rows="3" placeholder="energia=PLxxxxxxxx"></textarea></label>
+    </div>
+    <div class="group">
+      <h3>Aspetto</h3>
+      <label class="field"><span>Tema</span><select id="s-theme"><option value="auto">Automatico</option><option value="dark">Scuro</option><option value="light">Chiaro</option></select></label>
+      <label class="toggle"><input type="checkbox" id="s-wake-lock"><span>Tieni lo schermo acceso</span></label>
+    </div>
+    <div class="group">
+      <h3>Account</h3>
+      <div class="row wrap">
+        <button id="s-status" class="btn" type="button">Stato del sistema</button>
+        <button id="s-logout" class="btn btn-danger" type="button">Esci</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="sheet-status" class="sheet" hidden aria-labelledby="st-title">
+    <div class="sheet-head"><h2 id="st-title">Stato del sistema</h2><button class="icon-btn" data-close type="button" aria-label="Chiudi"><svg><use href="#i-close"/></svg></button></div>
+    <p class="empty">Ogni modulo dichiara cosa sta davvero facendo. Se un dato non è disponibile, JARVIS non lo inventa.</p>
+    <ul id="status-list" class="status-list"></ul>
+  </section>
+
+  <!-- Possibile incidente -->
+  <section id="emergency" class="emergency" role="alertdialog" aria-labelledby="em-title" hidden>
+    <h2 id="em-title">Possibile incidente rilevato</h2>
+    <p id="em-text">Sta bene? Rispondi a voce oppure tocca un pulsante.</p>
+    <div class="em-actions">
+      <button id="em-ok" class="btn btn-xl btn-primary" type="button">Sto bene</button>
+      <a id="em-call" class="btn btn-xl btn-danger" href="tel:112" hidden><svg><use href="#i-phone"/></svg><span>Chiama il 112</span></a>
+      <a id="em-contact" class="btn btn-xl" href="#" hidden></a>
+      <button id="em-share" class="btn" type="button" hidden>Condividi la posizione</button>
+    </div>
+    <p class="fineprint">JARVIS CAR non chiama mai da solo: serve il tuo tocco.</p>
+  </section>
+
+  <video id="cam" playsinline muted hidden></video>
+</div>
+
+<script src="assets/vendor/leaflet/leaflet.js"></script>
+<script type="module" src="js/auth.js"></script>
+<noscript><p style="padding:24px;color:#fff">JARVIS CAR richiede JavaScript.</p></noscript>
+</body>
+</html>
